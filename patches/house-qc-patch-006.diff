@@ -1,0 +1,46 @@
+--- a/server/cl_weapons.qc	2026-10-25 09:15:18.745899265 -0500
++++ b/server/cl_weapons.qc	2026-10-25 09:22:46.501895815 -0500
+@@ -307,11 +307,38 @@
+ 
+ 	if(!self.switchweapon)
+ 	{
+-		self.weapon = 0;
+-		self.weaponentity.state = WS_CLEAR;
+-		self.weaponname = "";
+-		self.items &~= IT_AMMO;
+-		return;
++		// house patch 006: PutClientInServer computes switchweapon from the
++		// client's weapon priority before that list has arrived (it is
++		// still empty at spawn), and the GetCvars repair fires while the
++		// client is still spectating and owns nothing — so a joining player
++		// can be left with switchweapon 0 and no weapon in hand until a
++		// manual weapon cycle. Recover here instead: by the time a player
++		// is alive in the game, the list has arrived and the best owned
++		// weapon can be chosen. Only if he truly owns nothing does the
++		// stock clear-out below apply.
++		self.switchweapon = w_getbestweapon(self);
++		if(!self.switchweapon)
++		{
++			// the priority list may never reach the server at all (the
++			// cvar report is a connect-time handshake); fall back to the
++			// first weapon the player actually owns — in this room that
++			// is always the MinstaNex.
++			float wi;
++			for(wi = WEP_FIRST; wi <= WEP_LAST; ++wi)
++				if(client_hasweapon(self, wi, FALSE, FALSE))
++				{
++					self.switchweapon = wi;
++					break;
++				}
++		}
++		if(!self.switchweapon)
++		{
++			self.weapon = 0;
++			self.weaponentity.state = WS_CLEAR;
++			self.weaponname = "";
++			self.items &~= IT_AMMO;
++			return;
++		}
+ 	}
+ 
+ 	makevectors(self.v_angle);

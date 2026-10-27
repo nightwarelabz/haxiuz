@@ -1,0 +1,38 @@
+# house-qc-patch-001 — thisissparta2! house rules in the game's own logic.
+# Against: stock Nexuiz 2.5.2 server QC, src/qcsrc-20091001/qcsrc (the
+# release's own gamesource20091001 tree). Paths are relative to that tree.
+#
+# 1) miscfunctions.qc — StartItems minstagib branch: grant every spawning
+#    player IT_UNLIMITED_WEAPON_AMMO. Stock minstagib deducts 1 cell per
+#    MinstaNex shot (w_minstanex.qc) and its ammocheck drains/kills a
+#    player sitting at 0 cells (DEATH_NOAMMO); the flag is the game's own
+#    "never deduct" bit — checks for it already exist in the shot code.
+#    Stock grants it only via a target_items map-entity token; no server
+#    cvar grants it. Effect: infinite ammo, no DEATH_NOAMMO deaths.
+# 2) cl_player.qc — SpawnThrownWeapon: under g_minstagib never throw the
+#    victim's weapon on death. Stock skipped the throw only when the
+#    victim had 0 cells; with (1) that never happens, so every death
+#    would drop a MinstaNex that minstagib_items turns into a 25-cell
+#    pickup. The only pickup in this room is the flag (Chase's law).
+#    Sole caller is PlayerDie (cl_player.qc, "throw a weapon" on death);
+#    no voluntary-throw path calls this function.
+--- a/server/miscfunctions.qc
++++ b/server/miscfunctions.qc
+@@ -870,6 +870,7 @@
+         start_weapons = WEPBIT_MINSTANEX;
+         weapon_action(WEP_MINSTANEX, WR_PRECACHE);
+         start_ammo_cells = cvar("g_minstagib_ammo_start");
++        start_items |= IT_UNLIMITED_WEAPON_AMMO;
+         g_minstagib_invis_alpha = cvar("g_minstagib_invis_alpha");
+         start_ammo_fuel = cvar("g_start_ammo_fuel");
+ 
+--- a/server/cl_player.qc
++++ b/server/cl_player.qc
+@@ -356,7 +356,6 @@
+ void SpawnThrownWeapon (vector org, float w)
+ {
+ 	if(g_minstagib)
+-	if(self.ammo_cells <= 0)
+ 		return;
+ 
+ 	if(g_pinata)

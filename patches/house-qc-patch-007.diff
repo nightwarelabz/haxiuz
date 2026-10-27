@@ -1,0 +1,11 @@
+--- /home/hatch/workspace/thisissparta2/src/qcsrc-20091001/qcsrc/client/miscfunctions.qc	2009-08-15 15:18:18.000000000 +0000
++++ qcsrc/client/miscfunctions.qc	2026-10-25 14:27:49.409032089 +0000
+@@ -22,7 +22,7 @@
+ 		if (!spectatee_status) //do cprint only for players
+ 			centerprint(strcat("^1Game starts in ", ftos(countdown_rounded), " seconds"));
+ 
+-		if(countdown_rounded <= 3 && countdown_rounded >= 1) {
++		if(countdown_rounded <= 10 && countdown_rounded >= 1) {
+ 			sound(self, CHAN_VOICE, strcat("announcer/robotic/", ftos(countdown_rounded), ".wav"), VOL_BASEVOICE, ATTN_NONE);
+ 		}
+ 
