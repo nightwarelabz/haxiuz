@@ -53,6 +53,7 @@ patch -p1 < house-qc-patch-010.diff   # identity: tag + door label "haxiuz"
 patch -p1 < house-qc-patch-011.diff   # the native cursor
 patch -p1 < house-qc-patch-012.diff   # the menu banner
 patch -p1 < house-qc-patch-013.diff   # mouse sensitivity, restored
+patch -p1 < house-qc-patch-014.diff   # the tag's seat: left of the plate
 
 cd qcsrc/menu
 fteqcc -O1 -Oreturn_only -Ostrip_functions   # writes ../../menu.dat
@@ -61,13 +62,15 @@ zip -9 sparta-menu.pk3 menu.dat gfx/nightware-banner.tga
 
 The patches apply clean in order and reproduce the compiled
 tree exactly. The pack's second entry is the banner patch 012
-draws: the NIGHTWARE LABZ gunmetal banner converted losslessly
-from its PNG master (1,672 x 941; the engine build decodes no
-PNG), at `gfx/nightware-banner.tga`. Current shipped hashes
-(008 through 013): menu.dat SHA-256
-`de06b531c8cabedf64c00d005d4e1365ca54b92c2992797a474073aa0e186f0c`,
+draws: the machined gunmetal NIGHTWARE LABZ plate from the
+house menu-art pass (`build_menu_art.py`'s `redo_plate` — the
+plate that pass baked into its menu backgrounds), extracted
+standalone with its alpha at its native 534 x 161, at
+`gfx/nightware-banner.tga`. Current shipped hashes
+(008 through 014): menu.dat SHA-256
+`d8afaccf5dd8f7b1f32383353a4e52ff9a011790859b370b1361630b24e80ef5`,
 sparta-menu.pk3 SHA-256
-`8e4f26be73410725a0f7d4807809eb29875cbf0b4988107bf2ee39d759c0e0c2`.
+`9b20e773ef86a45017835138ac3bda582631c583dddffe68f9c1c1eb6b67cd17`.
 
 ## Parity discipline
 
